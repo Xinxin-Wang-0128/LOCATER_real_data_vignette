@@ -1,0 +1,10 @@
+#! /bin/bash
+
+export R_DATATABLE_NUM_THREADS=1
+export OPENBLAS_NUM_THREADS=$3
+# this is to set environment parameter: number of threads for data table
+# and OpenBLAS library
+
+grand_dir="/home/xw445/scripts/shark/WashU_CCDG/to_share/"
+
+/usr/bin/Rscript --vanilla ${grand_dir}$1/3-putative-investigation/$2.R $3 $4 $5 $6

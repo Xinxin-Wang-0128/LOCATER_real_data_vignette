@@ -1,0 +1,27 @@
+This directory is to show example code for rank matching pheontypes and selecting the best rank matched phenotype for whole genome screening.
+
+First step: generating rank matched phenotypes. 1-generate-rank-matched-phenos.R
+This step uses the ranks of the original phenotype (already accounted for background covariates) and match them to simulated Gaussian random variables.
+We suggest generating multiple versions of rank matched phenotypes. In this example, we generated 100 versions.
+
+2nd step: calculate p-values for all version of rank matched phenotypes. 2-pval-rank-matched
+This step uses rank matched phenotypes (all versions) and calculate p-values for each version genome wide.
+Those p-values are used for calculating general version of genomic control and selecting the best rank matched phenotype.
+
+To start, you will need to start from submit.sh.
+
+submit.sh: This Bash script is designed to automate the process of generating and submitting a job array using a Slurm workload manager with dSQ, a tool for running job arrays on Slurm clusters.
+(more information: https://docs.ycrc.yale.edu/clusters-at-yale/job-scheduling/dsq/)
+
+In submit.sh, we generate a job file, then submit jobs in this job file in a job array. 
+each line of the job file refers to a job, which in our case will use to our R script and a executable file.
+(submit.sh -> run_jobs -> 2-pval-rank-matched.R)
+
+run_jobs: the executable file that sets environment variables that limit the number of threads used by R and OpenBLAS,
+Constructs the path to the R script based on input arguments and then executes the R script using the Rscript command with additional arguments. (R script is 2-pval-rank-matched.R)
+
+3rd step: 3-rds-to-txt.R: This script is used to convert the output of 2-pval-rank-matched.R from .rds to .txt format.
+Users are welcome to directly use .rds files.
+
+4th step: 4-calc-general-lambda-selection.R: calculate general version of lambda and select the best rank matched phenotype.
+
