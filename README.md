@@ -100,7 +100,7 @@ Output files are `.txt` files containing p-value from LOCATER and its sub-tests.
 
 #### Step 3.4: Calculate generalized genomic control parameters & select the best rank matched version
 
-Calculate generalized genomic control parameters & select the best rank matched version corresponds to scripts `/rank_matching_selection/4-calc-general-lambda-selection.R`. Note that this would only choose the best rank matched version if it exists. If there is no version that meet the requirement, the user will need to use the rank normalized version or choose other methods.
+Calculate generalized genomic control parameters & select the best rank matched version corresponds to scripts `/rank_matching_selection/4-calc-general-lambda-selection.R`. Note that this would only choose the best rank matched version if it exists. If there is no version that meet the requirement, the user will need to use the rank normalized version or choose other methods. 
 
 Input files of this step are: `.txt` files from the last step
 
@@ -118,25 +118,33 @@ Output files are `.rds` files containing p-value from LOCATER and SMT. [add deta
 
 #### Step 4.2: rds to txt conversion
 
-rds to txt conversion corresponds to scripts `/whole_genome_screening/3-rds-to-txt.R`. [add this]
+rds to txt conversion corresponds to scripts `/whole_genome_screening/3-rds-to-txt.R`. 
 
 Input files of this step are: `.rds` files containing p-value from LOCATER and SMT.
 
 Output files are `.txt` files containing p-value from LOCATER and SMT. [add detail of this file format].
 
-#### Step 4.3 Collect screening data and find interesting associations 
+#### Step 4.3 Collect screening data and visualize interesting associations 
 
-Collect screening data and find interesting associations correspond to script `whole_genome_screening/`. [add this]
+Collect screening data and find interesting associations correspond to script `whole_genome_screening/4-locater-wg-viz.R`. 
 
-Input files of this step are: `.txt` files 
+Input files of this step are: `.txt` files containing p-value from LOCATER and SMT and slope and intercept table of SD and QForm for robust phenotypes.
 
-Output files are `.rds` files containing whole chromosome p-value from LOCATER and SMT. [add detail of this file format]
+Output files are `.rds` files containing whole chromosome p-value from LOCATER and SMT and `.rds` files containing local p-values for interesting associaitons. [add detail of this file format]
 
-We would also create .rds files containing interesting association and table that contains basic information for all interesting associations
+We would also create PDF files containing interesting association.
 
-#### Step 4.4 Generate candidate loci 
+#### Step 4.4 Collect information for interesting associations 
 
-Generate candidate loci correspond to script `whole_genome_screening/`. [add this]
+Collect information for interesting associations correspond to script `whole_genome_screening/5-find-interesting-assoc.R`. 
+
+Input files are `.rds` files containing local p-values for interesting associations.
+
+Output file is a table that contains basic information for all interesting associations
+
+#### Step 4.5 Generate candidate loci 
+
+Generate candidate loci correspond to script `whole_genome_screening/6-generate-candidate-loci.R`. [add this]
 
 Input file is the table that contains basic information for all interesting associations. [add detail of this file format]
 
