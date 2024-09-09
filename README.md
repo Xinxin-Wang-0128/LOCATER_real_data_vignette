@@ -144,7 +144,7 @@ Output file is a table that contains basic information for all interesting assoc
 
 #### Step 4.5 Generate candidate loci 
 
-Generate candidate loci correspond to script `whole_genome_screening/6-generate-candidate-loci.R`. [add this]
+Generate candidate loci correspond to script `whole_genome_screening/6-generate-candidate-loci.R`. 
 
 Input file is the table that contains basic information for all interesting associations. [add detail of this file format]
 
@@ -162,21 +162,32 @@ Output files are `.rds` files containing p-value from LOCATER and SMT. [add deta
 
 #### Step 5.2 Sub-test evaluation
 
-This step is to visualize which sub-test contributed to LOCATER signal
+This step is to visualize which sub-test contributed to LOCATER signal locally for the loci or specifically for the lead marker, and to what extend the adjustments and standardization changed the p-value. This would base on a `.rds` file that contain the p-value table for SMT and LOCATER for interested loci and a interested phenotype. 
 
-
+The script is `followup/sub-test-evaluation.R` 
+Output files are PDF files with Manhattan plots and bar charts.
 
 #### Step 5.3: Sprig object generation
 
 This is only useful when SD is the sub-test that boosted the LOCATER signal.
 
-Sprig object generation corresponds to scripts `/followup/???`. [add this][make sure to add the script for hap matrix]
+Sprig object generation corresponds to scripts `/followup/sprig_object_generation`. 
 
 Input files of this step are: apart from the input files in step 5.1, we would also need the position of interested variant.
 
 Output files are various `.rds` files containing .... [add detail of this file format] 
 
-#### Step 5.4: Residual analysis
+#### Step 5.4: Sprig object visualization
+
+This is only useful when SD is the sub-test that boosted the LOCATER signal.
+
+Sprig object visualization corresponds to scripts `/followup/...`. [add this ]
+
+Input files of this step are: output files from step 5.4
+
+Output files are PDF files containing plots. 
+
+#### Step 5.5: Residual analysis
 
 This is only useful when SD is the sub-test that boosted the LOCATER signal.
 
