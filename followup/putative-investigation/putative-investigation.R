@@ -311,7 +311,7 @@ saveRDS(list(
   "sim" = sim,
   "out.list" = out.list,  
   "HMM_pars" = HMM_pars,
-  "smt.res" = res), paste0(res.storage.path,"res_",job.index,".rds"))
+  "smt.res" = res), paste0(res.storage.path,"res_",chr,"_",start,"-",end,"_sprig_investigation.rds"))
 
 print(paste("FULL JOB DONE:",proc.time()[3] - start0,"SECONDS TOTAL"))
 
