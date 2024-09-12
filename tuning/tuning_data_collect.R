@@ -26,11 +26,8 @@ for (i in 1:n.segs){
     res <- readRDS(file)
     result <- res$res
   
-    HMM_pars <- res$HMM_pars
     smt.res <- res$smt.res
-    error <- res$error.list
-    warning <- res$warning.list
-    
+
     result$normalized.signal <- NA
     result$smt.causal <- NA
     result$smt.target <- NA

@@ -18,7 +18,7 @@ experiment_name="2-pval-rank-matched"
 job_file_name="2-pval-rank-matched_batch.txt"
 # this is the job file name you want to generate
 
-grand_dir="/home/xw445/scripts/shark/WashU_CCDG/to_share/"
+grand_dir="/home/xw445/scripts/LOCATER_real_data_vignette/"
 
 log_dir="/home/xw445/palmer_scratch/logs/WashU_CCDG/to_share/rank_matching_selection/${experiment_name}/"
 mkdir -p $log_dir

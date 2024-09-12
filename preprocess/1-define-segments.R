@@ -134,3 +134,4 @@ write.table(chr.segments.table, file = paste0(grand.data.dir,"/chr_segments_",to
             quote = FALSE,
             row.names = FALSE,
             col.names = TRUE)
+

@@ -137,7 +137,7 @@ burnin.var.count <- 5000
 burnin.file <- paste0(grand.data.dir,run_group,"/phasing-vcfs.compute1.MANIFEST.burnin.table.txt")
 burnin.table <- read.table(burnin.file,header=TRUE)
 file_prefix <- paste(burnin.table[job.index,1:3],collapse = "-")
-
+# this is combining the first 3 columns to be the filename prefix.
 
 start0 <- proc.time()[3]
 
