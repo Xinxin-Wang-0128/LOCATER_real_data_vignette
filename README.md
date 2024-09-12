@@ -181,13 +181,13 @@ Output files are various `.rds` files containing .... [add detail of this file f
 
 This is only useful when SD is the sub-test that boosted the LOCATER signal.
 
-Sprig object visualization corresponds to scripts `/followup/...`. [add this ]
+Sprig object visualization corresponds to scripts `/followup/sprig_object_viz.R` and `/followup/hap_matrix_viz.R`
 
 Input files of this step are: output files from step 5.4
 
 Output files are PDF files containing plots. 
 
-#### Step 5.5: Residual analysis
+#### Step 5.5: Residual analysis [may not want to add this]
 
 This is only useful when SD is the sub-test that boosted the LOCATER signal.
 
