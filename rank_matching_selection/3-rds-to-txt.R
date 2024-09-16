@@ -43,7 +43,7 @@ for (iter in iters){
       locater.res <- cbind(locater.pos,locater.res)
       
       data.table::fwrite(locater.res,file=paste0(locater.dir,"locater_res_",as.character(iter),".txt"),
-                         quote=FALSE,sep="\t")
+                         quote=FALSE,sep="\t",na = "NA")
       
     }
     
