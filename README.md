@@ -146,6 +146,7 @@ eGFR_MDRD_combined13	0.672578165427807	-0.131471857279352	0.998272966537901	0.88
 eGFR_MDRD_combined14	0.872166434118532	0.380512232570126	0.998228667327908	0.826385173476435	0.196864478306705	0.997307768853606
 ......
 ```
+Based on the best rank matched version of available phenotypes and the rank normalized phenotypes for ones that don't have the best rank matched version, users could construct a robust phenotype table, with columns being all phenotypes interested and the rows being individuals. 
 
 ### Step 4: Whole genome screening
 
@@ -155,7 +156,7 @@ Screening correspond to scripts in `whole_genome_screening/2-screening` folder.
 
 Input files of this step are: robust phenotypes (best rank matched version + rank normalized for phenotypes that cannot pick the best rank matched version); hap files, table containing the boundaries of small segments, background covariate matrix, best HMM parameter setting.
 
-Output files are `.rds` files containing p-value from LOCATER and SMT. [add detail of this file format]
+Output files are `.rds` files containing p-value from LOCATER and SMT, and the basic information about this segment. We will parse these files in the next step.
 
 #### Step 4.2: rds to txt conversion
 
@@ -163,7 +164,42 @@ rds to txt conversion corresponds to scripts `/whole_genome_screening/3-rds-to-t
 
 Input files of this step are: `.rds` files containing p-value from LOCATER and SMT.
 
-Output files are `.txt` files containing p-value from LOCATER and SMT. [add detail of this file format].
+Output files are `.txt` files containing p-value from LOCATER and SMT.
+
+For the `.txt` file of LOCATER, it looks like the following table:
+
+```sh
+
+locater.pos  locus.idx  thresh  max1var  old.sprigs  smt.noise  max.k  sw.thresh  eig.thresh  cs.approx  test.config  num.sprigs  k  exit.status  precise  prop.var  var.ratio          smt                rd                  qform               phenotype              num.layers tot
+119387217    4928       0.2     TRUE     FALSE       raw        0      6          6.5         FALSE      1            1884        0  0            FALSE    0         NA                 0.490663367251888  0.493882584265179   0.0347904622373371  eGFR_MDRD_combined92   1884       0.276766447542598   
+119387217    4928       0.2     TRUE     FALSE       raw        0      6          6.5         FALSE      1            1884        0  0            FALSE    0         NA                 0.549478227289189  0.612385643245848   0.0257749225565219  S_krea_combined94      1884       0.360707138613825   
+119387217    4928       0.2     TRUE     FALSE       raw        0      6          6.5         FALSE      1            1884        0  0            FALSE    0         NA                 0.299944411579717  0.0431535961619506  0.109091640585671   S_totalc_combined52    1884       0.137696420561351   
+119387217    4928       0.2     TRUE     FALSE       raw        0      6          6.5         FALSE      1            1884        0  0            FALSE    0         NA                 0.208427898040653  0.190727845883129   0.122268869273039   ln_S_tottg_combined35  1884       0.0797823593041662  
+119387217    4928       0.2     TRUE     FALSE       raw        0      6          6.5         FALSE      1            1884        0  0            FALSE    0         NA                 0.569059802960148  0.593313671106326   0.348724894638233   ln_P_CRP_combined      1884       0.361006369922754   
+119387217    4928       0.2     TRUE     FALSE       raw        0      6          6.5         FALSE      1            1884        0  0            FALSE    0         NA                 0.334549337965149  0.83504448802095    0.537047076462959   height_combined34      1884       0.367147946025518   
+119387217    4928       0.2     TRUE     FALSE       raw        0      6          6.5         FALSE      1            1884        0  0            FALSE    0         NA                 0.386968486772063  0.142858306516035   0.0937612683956253  bmi_combined87         1884       0.198765880725852   
+119387217    4928       0.2     TRUE     FALSE       raw        0      6          6.5         FALSE      1            1884        0  0            FALSE    0         NA                 0.461611094048419  0.235232368396069   0.41876800544341    weight_combined58      1884       0.254445621096923   
+119387217    4928       0.2     TRUE     FALSE       raw        0      6          6.5         FALSE      1            1884        0  0            FALSE    0         NA                 0.150978716652847  0.924513318776337   0.413816623200519   systbp_combined3       1884       0.310958241456534   
+
+...
+```
+and for the ones of SMT, it looks like:
+
+```sh
+
+smt.pos    map               MAC   smt.p               phenotype
+119386926  121.050295674509  419   0.190122908513672   eGFR_MDRD_combined92
+119386995  121.050357742536  2510  0.0968067455618945  eGFR_MDRD_combined92
+119387217  121.050557130045  12    0.490663367251888   eGFR_MDRD_combined92
+119387284  121.050596553     2507  0.0802841672351469  eGFR_MDRD_combined92
+119387314  121.050610952984  48    0.636572077027618   eGFR_MDRD_combined92
+119387440  121.050671401     6524  0.0281836966411413  eGFR_MDRD_combined92
+119387461  121.050680836489  6526  0.0138721922906406  eGFR_MDRD_combined92
+119387575  121.050730482235  6     0.31888977384413    eGFR_MDRD_combined92
+119387870  121.050858938649  205   0.304594375162493   eGFR_MDRD_combined92
+...
+
+```
 
 #### Step 4.3 Collect screening data and visualize interesting associations 
 
@@ -171,25 +207,61 @@ Collect screening data and find interesting associations correspond to script `w
 
 Input files of this step are: `.txt` files containing p-value from LOCATER and SMT and slope and intercept table of SD and QForm for robust phenotypes.
 
-Output files are `.rds` files containing whole chromosome p-value from LOCATER and SMT and `.rds` files containing local p-values for interesting associaitons. [add detail of this file format]
+Output files are `.rds` files containing whole chromosome p-value from LOCATER and SMT and `.rds` files containing local p-values for interesting associations. 
 
-We would also create PDF files containing interesting association.
+The whole chromosome file contains a list where all results for each phenotype is an element of this list. The length of this list is the number of phenotypes, and each element contains results from all variants in this chromosome for this specific phenotype. 
+
+The local file contains a list where the element `smt.in.plot` and `locater.in.plot` each contain a table that has the same format as the `.txt` file mentioned in Step 4.2, but only for the interested phenotype and region.
+
+We would also create PDF files containing Manhattan plots of interesting association.
 
 #### Step 4.4 Collect information for interesting associations 
 
 Collect information for interesting associations correspond to script `whole_genome_screening/5-find-interesting-assoc.R`. 
 
-Input files are `.rds` files containing local p-values for interesting associations.
+Input files are `.rds` files containing local p-values for interesting associations from the last step.
 
-Output file is a table that contains basic information for all interesting associations
+Output file is a table that contains basic information for all interesting associations.
+
+The output table should look like this:
+```sh
+chr  phenotype        start      end        locater_tot       smt               max.locater.pos  max.smt.pos  sig.locater
+1    Alb_combined2    107211635  108411635  7.10109803447498  7.58941467622041  107811635        107811635    FALSE
+1    Alb_combined2    1767871    2967871    6.34402427105624  4.49488204299527  2367871          2367871      TRUE
+1    Alb_combined2    239448945  240648945  6.57465405866869  7.05650148421113  240048945        240048945    FALSE
+1    bmi_combined87   155303523  156538032  6.65523524921212  7.13807289815438  155911161        155911161    FALSE
+1    bmi_combined87   237356129  238562928  6.6284636818973   7.11097234795622  237956319        237956319    FALSE
+1    bmi_combined87   246943495  248362310  6.96314299115726  6.21153892147095  247762310        247543495    TRUE
+1    FAw3_combined51  48622192   49822192   6.30437131487927  6.78289736609534  49222192         49222192     FALSE
+1    FAw3_combined51  56352598   57552598   6.4397314144312   6.91992084064918  56952598         56952598     FALSE
+1    FAw6_combined    61835572   63312025   8.66664420286488  9.17419908667314  62499950         62499950     FALSE
+...
+```
 
 #### Step 4.5 Generate candidate loci 
 
 Generate candidate loci correspond to script `whole_genome_screening/6-generate-candidate-loci.R`. 
 
-Input file is the table that contains basic information for all interesting associations. [add detail of this file format]
+Input file is the table that contains basic information for all interesting associations from the last step.
 
 Output file is a table for basic information for candidate loci.
+
+The output table will look like this:
+
+```sh
+chr  start     end
+1    1767871   2967871
+1    3828771   5028771
+1    16265079  17465079
+1    28663692  29863692
+1    41125005  42325005
+1    46503256  47703256
+1    48622192  49822192
+1    53581044  57130021
+1    56352598  57552598
+...
+
+```
 
 ### Step 5: Candidate loci investigation
 
@@ -197,16 +269,23 @@ Output file is a table for basic information for candidate loci.
 
 Screening correspond to scripts in `followup/3-putative-investigation` folder. Note that for all candidate loci we would want to set the same seed in R, and use this seed for all later investigations. 
 
-Input files of this step are: robust phenotypes (best rank matched version + rank normalized for phenotypes that cannot pick the best rank matched version); hap files, background covariate matrix, best HMM parameter setting and basic information for candidate loci (chr, start and end)
+Input files of this step are: robust phenotypes (best rank matched version + rank normalized for phenotypes that cannot pick the best rank matched version); hap files, background covariate matrix, best HMM parameter setting and basic information for candidate loci (chr, start and end) from step 4.5.
 
-Output files are `.rds` files containing p-value from LOCATER and SMT. [add detail of this file format] Users could use the same rds to txt conversion and data collection method described in step 4.2 and 4.3.
+Output files are `.rds` files containing p-value from LOCATER and SMT for this interested region. Users could use the same rds to txt conversion and data collection method described in step 4.2 and 4.3.
 
 #### Step 5.2 Sub-test evaluation
 
-This step is to visualize which sub-test contributed to LOCATER signal locally for the loci or specifically for the lead marker, and to what extend the adjustments and standardization changed the p-value. This would base on a `.rds` file that contain the p-value table for SMT and LOCATER for interested loci and a interested phenotype. 
+This step is to visualize which sub-test contributed to LOCATER signal locally for the loci or specifically for the lead marker, and to what extend the adjustments and standardization changed the p-value. This would base on a `.rds` file that contain the p-value table for SMT and LOCATER for interested loci and an interested phenotype. 
 
-The script is `followup/sub-test-evaluation.R` 
+The script is `followup/sub-test-evaluation.R`.
+
 Output files are PDF files with Manhattan plots and bar charts.
+
+Example plots:
+
+![bar_peak_ln_M_HDL_TG_combined83_49038347-50253146](https://github.com/user-attachments/assets/45b076bb-6f30-48a0-bc8e-255739f031c7)
+
+![split_Manhattan_ln_M_HDL_TG_combined83_49038347-50253146_locaters](https://github.com/user-attachments/assets/d04554a8-8179-46b7-9901-26ce5f959db6)
 
 #### Step 5.3: Sprig object generation
 
@@ -214,9 +293,16 @@ This is only useful when SD is the sub-test that boosted the LOCATER signal.
 
 Sprig object generation corresponds to scripts `/followup/sprig_object_generation`. 
 
-Input files of this step are: apart from the input files in step 5.1, we would also need the position of interested variant.
+Input files of this step are: addition to the input files in step 5.1, we would also need the position of interested variant.
 
-Output files are various `.rds` files containing .... [add detail of this file format] 
+Output files are various `.rds` files containing information for many aspects of sprig object.
+
+`spigs` is a object that include sprig assignment information and number of sprigs.
+
+`res.inside` is a list that include detailed SD results.  `res.inside$u` is a matrix containing p-values from all sprigs called at this variants with all phenotypes; `res.inside$p_value` is an array with p-values from SD test for all phenotypes at this variant.  
+
+`g` is the genotype vector at this interested variant. `A`: background covariate matrix. `y`: phenotypes.
+
 
 #### Step 5.4: Sprig object visualization
 
@@ -226,7 +312,16 @@ Sprig object visualization corresponds to scripts `/followup/sprig_object_viz.R`
 
 Input files of this step are: output files from step 5.4
 
-Output files are PDF files containing plots. 
+Output files are PDF files containing plots: 
+
+<img width="678" alt="Screenshot 2024-09-16 at 3 41 59 PM" src="https://github.com/user-attachments/assets/3ea0f23c-1116-42e8-b02b-224483bd9904">
+<img width="746" alt="Screenshot 2024-09-16 at 3 42 39 PM" src="https://github.com/user-attachments/assets/00ff9b2a-d500-4227-9bd3-c4b59b008785">
+
+<img width="1329" alt="Screenshot 2024-09-16 at 3 42 58 PM" src="https://github.com/user-attachments/assets/9f138b6e-851b-4155-977d-30f3137ac959">
+
+#### Comments for associations where QForm boosted LOCATER signal
+
+Users could choose their preferred way to do conditional analysis (condition on the lead marker of SMT iteratively) and use preferred way to visualize. In this publication, we used in-house scripts to plot LocusZoom plots.
 
 #### Step 5.5: Residual analysis [may not want to add this]
 
