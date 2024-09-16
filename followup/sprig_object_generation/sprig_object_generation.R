@@ -446,9 +446,6 @@ for(i in 1:nrow(HMM_pars)){
               saveRDS(A, file = paste0(res.storage.path,"A_",t,"_chr",chr,".rds"))
               saveRDS(y,file = paste0(res.storage.path,"y_",t,"_chr",chr,".rds"))
               saveRDS(res.inside,file = paste0(res.storage.path,"res_inside_",t,"_chr",chr,".rds"))
-              saveRDS(ro.res,file = paste0(res.storage.path,"ro_res_",t,"_chr",chr,".rds"))
-              saveRDS(interested.global.idx,file = paste0(res.storage.path,"interested_global_idx_",t,"_chr",chr,".rds"))
-              saveRDS(interested.local.idx,file = paste0(res.storage.path,"interested_local_idx_",t,"_chr",chr,".rds"))
               saveRDS(g,file = paste0(res.storage.path,"g_",t,"_chr",chr,".rds"))
             }
             

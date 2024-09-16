@@ -6,6 +6,7 @@ rm(list=ls())
 library(kalis)
 library(patchwork)
 library(ggplot2)
+library(data.table)
 
 run_group <- "WashU_CCDG"
 run_name <- "whole_genome_yale/wg_unrelated_METSIMonlyData_101phenos_Bjitter_local_10cM_clean"
@@ -234,8 +235,8 @@ PlotSprigPCsLegend <- function(interesting.individuals,sprig_names) {
 significant.sprig.info.file <- fread(paste0(res.storage.path,"significant_sprig_info_highlights.txt"))
 significant.sprig.info.file$significant.sprigs <- rep(NA,nrow(significant.sprig.info.file))
       # create a blank column to store the index of significant sprigs                                                         
-viz.dir <- paste0(grand.data.dir,run_group,"/screening/data/whole_genome_yale/locater_screening_local_plots/",run_name,"/misc/")
-if(!dir.exists(viz.dir)){ dir.create(viz.dir)}
+viz.dir <- paste0(grand.data.dir,run_group,"/screening/to_share/locater_screening_local_plots/",run_name,"/misc/")
+if(!dir.exists(viz.dir)){ dir.create(viz.dir,recursive = TRUE)}
 
 for (row in 1:nrow(significant.sprig.info.file)){
   chr <- as.integer(significant.sprig.info.file[row,]$chr)
@@ -254,25 +255,17 @@ for (row in 1:nrow(significant.sprig.info.file)){
   
   sprigs <- readRDS(paste0(res.storage.path,"sprigs_",local.index,"_chr",chr,".rds"))
   A <- readRDS(paste0(res.storage.path,"A_",local.index,"_chr",chr,".rds"))
-  #QR <- readRDS(paste0(res.storage.path,"QR_",local.index,"_chr",chr,".rds"))
   y <- readRDS(paste0(res.storage.path,"y_",local.index,"_chr",chr,".rds"))
-  #AC <- readRDS(paste0(res.storage.path,"AC_",local.index,"_chr",chr,".rds"))
   res.inside <- readRDS(paste0(res.storage.path,"res_inside_",local.index,"_chr",chr,".rds"))
-  ro.res <- readRDS(paste0(res.storage.path,"ro_res_",local.index,"_chr",chr,".rds"))
   g <- readRDS(paste0(res.storage.path,"g_",local.index,"_chr",chr,".rds"))
-  all.interested.global.idx <- readRDS(paste0(res.storage.path,"interested_global_idx_",local.index,"_chr",chr,".rds"))
-  all.interested.local.idx <- readRDS(paste0(res.storage.path,"interested_local_idx_",local.index,"_chr",chr,".rds"))
-  
+ 
   
   index <- which(colnames(y) == interested.pheno)
   h0 <- locater:::FitNull(y, A)
   
   # 
   smt.res <- locater:::TestMarker(h0, g, add.noise = "raw")
-  #apply(u, 2, function(x) {renyi_test(x, k = 16)$p_value})
-  
-  
-   
+  # reconstruct the phenotype residuals provided for SD test.
   
   # Find how many of the top sprigs we care about
   cairo_pdf(paste0(viz.dir,"QQ_test_chr",chr,"_",local.index,"_inside.pdf"))

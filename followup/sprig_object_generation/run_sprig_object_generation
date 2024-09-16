@@ -4,4 +4,7 @@
 export R_DATATABLE_NUM_THREADS=1
 export OPENBLAS_NUM_THREADS=$3
 
-/usr/bin/Rscript --vanilla /home/xw445/scripts/LOCATER_real_data_vignette/$1/sprig_object_generation/$2.R $3 $4 $5 $6 $7
+
+grand_dir="/home/xw445/scripts/LOCATER_real_data_vignette/"
+
+/usr/bin/Rscript --vanilla ${grand_dir}$1/sprig_object_generation/$2.R $3 $4 $5 $6 $7
