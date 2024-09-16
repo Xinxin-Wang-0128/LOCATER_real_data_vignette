@@ -18,7 +18,7 @@ experiment_name="2-wg-screening"
 job_file_name="2-wg-screening_batch.txt"
 # this is the jobe file name you want to generate
 
-grand_dir="/home/xw445/scripts/shark/WashU_CCDG/to_share/"
+grand_dir="/home/xw445/scripts/LOCATER_real_data_vignette/"
 
 log_dir="/home/xw445/palmer_scratch/logs/WashU_CCDG/to_share/whole_genome_screening/${experiment_name}/"
 mkdir -p $log_dir
