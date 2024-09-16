@@ -131,22 +131,24 @@ run_name <- "2-wg-screening"
 
 locater.threshold <- -log10(7.17e-9)-1
 smt.threshold <- -log10(7.17e-9)
-
+#  threshold based on effective number of independent test in LOCATER and SMT.
 
 effective.n.tests.locater <- 0.05/10 ^ (-7.851456)
 effective.n.tests.smt <- 0.05/10 ^ (-8.144726)
+# effective number of independent tests in LOCATER and SMT
 
 buffer.region <- 6e5
 
 grand.data.dir <- "/gpfs/gibbs/pi/ycgh/xw445/projects/"
 burnin.file <- paste0(grand.data.dir,experiment.name,"/phasing-vcfs.compute1.MANIFEST.burnin.table.txt")
 burnin.table <- read.table(burnin.file,header=TRUE)
+# the table for the start and end sites of original phased data
 
 slope_intercept_table <- 
   read.table(paste0("/home/xw445/gibbs/",experiment.name,
                     "/screening/data/whole_genome_yale/locater_only/wg_unrelated_METSIMonlyData_101phenos_QQ_Bjitter/lambda_table_real_screened_phenos.txt"))
 
-# replace this to the slopd and intercept information for traits that are actually screened in this experiment.
+# the slope and intercept information for traits that are actually screened in this experiment.
 
 for (chr in 1:22){
   
@@ -158,11 +160,13 @@ for (chr in 1:22){
 
   all.final.smt <- readRDS(paste0(whole.chr.data.dir,"whole_chr_smt_data_chr",chr,".rds"))
   all.final.locater <- readRDS(paste0(whole.chr.data.dir,"whole_chr_locater_data_chr",chr,".rds"))
-
+# load results from the whole chromosome for all phenotypes
+  
   phenos <- names(all.final.locater)
   
   local.data.dir <- paste0("/gpfs/gibbs/pi/ycgh/xw445/projects/",experiment.name,"/screening/to_share/locater_screening_local_data/",run_name,"/gc_controlled_alt/chr",chr,"/")
   viz.dir <- paste0("/gpfs/gibbs/pi/ycgh/xw445/projects/",experiment.name,"/screening/to_share/locater_screening_local_plots/",run_name,"/gc_controlled_alt/chr",chr,"/")
+  # specify dir for outputs: figures and local data
   
   if (!dir.exists(viz.dir)){dir.create(viz.dir,recursive = TRUE)}
   if (!dir.exists(local.data.dir)){dir.create(local.data.dir,recursive = TRUE)}
@@ -172,11 +176,14 @@ for (chr in 1:22){
     
     pheno <- phenos[pheno.idx]
   
-    slope.rd <- slope_intercept_table$rd_slope[pheno.idx]
-    intercept.rd <- slope_intercept_table$rd_intercept[pheno.idx]
+    # get the slope and intercept for SD and QForm for this phenotype
+    slope.sd <- slope_intercept_table$sd_slope[pheno.idx]
+    intercept.sd <- slope_intercept_table$sd_intercept[pheno.idx]
     
     slope.qform <- slope_intercept_table$qform_slope[pheno.idx]
     intercept.qform <- slope_intercept_table$qform_intercept[pheno.idx]
+    
+    
     
     final.smt <- all.final.smt[pheno.idx][[1]]
     
@@ -187,38 +194,41 @@ for (chr in 1:22){
     
     final.locater <- final.locater[order(final.locater$locater.pos),]
     
+    # seperate data for SMT variants that are tested in LOCATER vs not tested in LOCATER
     final.smt$in.locater <- 
       ifelse(final.smt$smt.pos %in% final.locater$locater.pos,1,0)
     
     
-    # just control rd and Qform 
-    final.locater$rd.controlled <- PvalAdjust(final.locater$rd,intercept = intercept.rd,slope = slope.rd)
-    final.locater$rd.controlled[final.locater$rd.controlled < 0] <- 0
+    # general version of genomic control for sd and Qform 
+    final.locater$sd.controlled <- PvalAdjust(final.locater$sd,intercept = intercept.sd,slope = slope.sd)
+    final.locater$sd.controlled[final.locater$sd.controlled < 0] <- 0
     final.locater$qform.controlled <- PvalAdjust(final.locater$qform,intercept = intercept.qform,slope = slope.qform)
     final.locater$qform.controlled[final.locater$qform.controlled < 0] <- 0
     # make sure -log10(p-values) are positive
     
-    # then use the exact msse function in TestLoci
+    # then use the exact msse function in TestLoci to combine adjusted SD, adjusted QForm and SMT.
     final.locater$tot.controlled <- locater::msse.test(final.locater$smt,
-                                                                final.locater$rd.controlled,
+                                                                final.locater$sd.controlled,
                                                                 final.locater$qform.controlled,test.1.solo = TRUE)
     
   
     gc()
     
  
-      final.locater$tot.controlled <- final.locater$tot.controlled + log10(effective.n.tests.smt/effective.n.tests.locater)
-      
-
+    final.locater$tot.controlled <- final.locater$tot.controlled + log10(effective.n.tests.smt/effective.n.tests.locater)
+    # standardize LOCATER result, so that LOCATER and SMT have the same threshold
+    # this is easier for comparison
     
     filtered.smt <- subset(final.smt, smt.p > smt.threshold)
     filtered.locater <- subset(final.locater,tot.controlled > locater.threshold)
-
+    # keeping variants that are rougly significant
+    
     all_positions <- unique(c(filtered.smt$smt.pos,
                               filtered.locater$locater.pos))
     
     
     regions <- FindInterestingRegion(all_positions,buffer.region)
+    # use rougly significant variants to define regions of interest
     
     if (nrow(regions)==0){
       next
@@ -229,28 +239,33 @@ for (chr in 1:22){
     for (i in 1:length(start.positions)){
       smt.in.plot <-subset(final.smt,smt.pos >= start.positions[i] & smt.pos <= end.positions[i])
       locater.in.plot <- subset(final.locater,locater.pos >= start.positions[i] & locater.pos <= end.positions[i])
-
+      # subset smt and LOCATER results
 
         saveRDS(list("smt.in.plot" = smt.in.plot,
-                     "locater.in.plot" = locater.in.plot
-                    
-        ), paste0(local.data.dir,"local_data_",pheno,"_",start.positions[i],"-",end.positions[i],"_adjusted.rds"))
+                     "locater.in.plot" = locater.in.plot), 
+                paste0(local.data.dir,"local_data_",pheno,"_",start.positions[i],"-",end.positions[i],"_adjusted.rds"))
+        # save the local data
+        
+        
+        
+        ############ start visualization ###########
+        
         cairo_pdf(filename=paste0(viz.dir,"Manhattan_",pheno,"_",start.positions[i],"-",end.positions[i],"_adjusted.pdf"),
                   width = 10,
                   height=5,
                   fallback_resolution=600)
 
       
-      
-      ############ start visualization ###########
+   
       plot.max <- max(c(locater.in.plot$tot.controlled,
                         smt.in.plot$smt.p),na.rm=TRUE) +2
+      # make sure the plot could incorporate all signals
       
       sub.chr.segments <- subset(local.burnin.table,core.end >= start.positions[i] & core.start <= end.positions[i])
       if (nrow(sub.chr.segments)!=0){
         edges <- sub.chr.segments$burnin.start
         edges <- sort(edges)[-1]
-        #small segment edges
+        # visualize small segment edges to be aware of the boundary effect
       }
       
       smt.in.plot$in.locater <- factor(smt.in.plot$in.locater, levels = c("0", "1"))
@@ -266,13 +281,14 @@ for (chr in 1:22){
         geom_point(data=smt.in.locater,aes(x=smt.pos/1e6, y=smt.p,color="smt_in"),size=0.3) + 
         geom_point(data=smt.not.in.locater,aes(x=smt.pos/1e6, y=smt.p,color="smt_not"),size=0.3) +
         theme_classic()
-      
+      # visualize data of LOCATER. position unit Mb
       
    
         p <- p + geom_hline(yintercept=smt.threshold, linetype="dashed", color = "black")  +
           geom_vline(xintercept = edges,linetype="dashed", color = "grey")
-
-      
+      # visualize significance threshold and edge boundary
+        
+        
       p <- p + scale_colour_manual(values = c("LOCATER" = "#D55E00","smt_in" = "#56B4E9", "smt_not" = "#000000"),  name = "", # Adjust the colors accordingly
                                    labels = c("LOCATER","SMT (Tested in\nLOCATER)", "SMT (Not tested\nin LOCATER)")) +
         theme(legend.key.size = unit(5, 'mm')) +

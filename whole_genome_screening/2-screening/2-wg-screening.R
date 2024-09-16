@@ -1,5 +1,5 @@
 ##################
-# this is a example code to run whole genome screening for best rank matched phenotypes
+# Example code to run whole genome screening for best rank matched phenotypes
 ##################
 rm(list=ls())
 
@@ -9,12 +9,13 @@ rm(list=ls())
 nthreads <- as.integer(commandArgs(TRUE)[1])
 job.index <- commandArgs(TRUE)[2]
 set.seed(job.index)
-# this job index will be in the range of 1-number of small segments
-# it is essential to give each small segment a different seed to make sure p-values from SD is not highly correlated.
-# correlation will lead to inflation. 
+
+# This job index will be in the range of 1 to the number of small segments.
+# It is essential to give each small segment a different seed to ensure that p-values from SD are not highly correlated.
+# High correlation could lead to inflation of results.
 
 ##########################
-# Specify Directories    #
+# Specify Directories
 ##########################
 
 run_group <- "WashU_CCDG"
@@ -24,6 +25,7 @@ grand.data.dir <- "/gpfs/gibbs/pi/ycgh/xw445/projects/"
 
 res.storage.path <- paste0(grand.data.dir,run_group,"/screening/to_share/",run_name,"/")
 if(!dir.exists(res.storage.path)){dir.create(res.storage.path,recursive = TRUE)}
+# Create the directory to store results if it doesn't exist
 
 input.genome.dir <- paste0(grand.data.dir,run_group,"/haplotypes/segmented_phased_merged_reannotated_ancestral_split_new_pass_singleton_filtered_6806metsim_hap/")
 
@@ -50,20 +52,17 @@ library(Matrix)
 # Specify parameters
 ####################################################################
 
-ploidy <- 2L
-# diploid
-num.ckpts <- 2L
-# checkpoints for speed
+ploidy <- 2L  # Diploid organism
+num.ckpts <- 2L  # Number of checkpoints for speed optimization
 
-use.forking <- FALSE
-use.speidel <- TRUE
-# if using speidel et al version of LS model
+use.forking <- FALSE  # Do not use forking for parallelization
+use.speidel <- TRUE  # Use Speidel et al. version of the LS model
 
-burnin.count <- 6000
-# make sure N variants on each end of the segment is burnin region and will not be evaluated
+burnin.count <- 6000  
+# Number of variants on each end of the segment to be considered as burn-in region (not evaluated in LOCATER)
 
 #################################
-# generate sim object, an object storing information for each segment
+# Generate sim object, an object storing information for each segment
 #################################
 
 segments.file <- paste0(grand.data.dir,run_group,"/chr_segments_4000segs_new_pass.txt")
@@ -73,7 +72,7 @@ segments.table <- read.table(segments.file,header=TRUE)
 burnin.file <- paste0(grand.data.dir,run_group,"/phasing-vcfs.compute1.MANIFEST.burnin.table.txt")
 burnin.table <- read.table(burnin.file,header=TRUE)
 
-job.row <- segments.table[job.index,]
+job.row <- segments.table[job.index,] # Get the current job's segment
 orig.seg.index <- which(burnin.table$chr==job.row$chr & 
                           burnin.table$core.start <= job.row$core.start.pos & 
                           burnin.table$core.end >= job.row$core.end.pos)
@@ -84,12 +83,13 @@ file_prefix <- paste(burnin.table[orig.seg.index,1:3],collapse = "-")
 # read in new segment file
 segment.info <- segments.table[job.index,]
 
-
+# Timing the process
 start0 <- proc.time()[3]
 start1 <- proc.time()[3]
 
 
-sim <- list()
+sim <- list() # Initialize sim object
+
 # create haplotype file path
 haps.path <- paste0(input.genome.dir,file_prefix,".phased_multi_merged_unique_ID_ancestral_split_sample_AC_var_metsim6806_nosingleton.hap.gz")
 sim$haps <- haps.path
@@ -111,7 +111,7 @@ caching.index <- c((min(caching.index) - burnin.count):(max(caching.index) + bur
 caching.index <- caching.index[caching.index >= 1 & caching.index <= length(pos)]
 # make sure the burnin region is inside the big segment
 caching.index <- intersect(caching.index,which(pass==TRUE))
-# remove anything that did not pass
+# Retain only passing variants
 
 if (length(caching.index)<burnin.count){stop("not enough pass var in this smaller segment.")}
 sim$pos <- pos[caching.index]
@@ -122,10 +122,10 @@ sim$caching.index <- caching.index
 print("sim object created!")
 
 #################################################################
-# subset genome and A based on interested individuals, cache haplotypes
+# Subset genome and A based on interested individuals, cache haplotypes
 #################################################################
 
-# since we have decided on samples to run, I load the names of these samples and subset genome and A matrix based on that
+# Load the names of samples involved in the experiment and subset genome and A matrix accordingly
 samples.in.experiment <- readRDS("/gpfs/gibbs/pi/ycgh/xw445/projects/WashU_CCDG/screening/data/whole_genome_yale/wg_unrelated_METSIMonlyData_101phenos_local_10cM/samples_in_experiment.RDS")
 sample.file <- paste0(input.genome.dir,file_prefix,".phased_multi_merged_unique_ID_ancestral_split_sample_AC_var_metsim6806_nosingleton.samples")
 sample.table <- read.table(sample.file,header=TRUE)
@@ -135,6 +135,7 @@ sample.idx <- na.omit(sample.idx)
 sample.idx <- as.vector(sample.idx)
 
 
+# Ensure samples are sorted properly for haplotype subsetting
 if (all.equal(sort(sample.idx),sample.idx)){
   hap.idx <- sort(c(2*sample.idx,2*sample.idx-1))
 } else {
@@ -152,7 +153,7 @@ sample.in.pc <- na.omit(sample.in.pc)
 A <- A[sample.in.pc,]
 
 A <- cbind(rep(1,nrow(A)),A[,2:11])
-# as required by LOCATER, add a column of "1" before the background covariate matrices
+# Add a column of 1s to the covariate matrix as required by LOCATER
 A <- as.matrix(A)
 Q <- qr.Q(qr(A))
 
@@ -173,7 +174,7 @@ for (i in 1:L()){
 sim$MAC <- MAC
 
 if (sum(MAC==1 | MAC==0)>0){
-  # if subsetting individuals created more singletons and monomorphics,
+  # If subsetting individuals created more singletons and monomorphics, reload
   ClearHaplotypeCache()
   new.loci.idx <- sim$caching.index[which(MAC>=2)]
   # get new loci index 
@@ -186,7 +187,7 @@ if (sum(MAC==1 | MAC==0)>0){
   sim$pass <- pass[new.loci.idx]
   sim$new.loci.idx <- new.loci.idx
   sim$MAC <- MAC[which(MAC >= 2)]
-  # update map, pos, pass, new.loci.idx and MAC to match up with newly cached haplotypes
+  # Update map, pos, pass, new.loci.idx, and MAC to match newly cached haplotypes
   
 } 
 
@@ -194,7 +195,7 @@ print(paste("region created and cached:",proc.time()[3] - start1,"seconds."))
 
 
 #################################################################
-# specify HMM parameters, read in rank matched y
+# specify HMM parameters, read in rank matched phenotypes
 #################################################################
 
 n <- N() / ploidy
@@ -215,7 +216,7 @@ y <- readRDS(paste0(grand.data.dir,run_group,
 n.phenos <- ncol(y)
 
 #################################################################
-# run SMT
+# Run SMT (single-marker testing)
 #################################################################
 res <- replicate(n.phenos,
                  list("smt.max" = NA_real_,

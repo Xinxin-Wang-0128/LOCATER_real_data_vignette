@@ -52,13 +52,21 @@ for (iter in iters){
     ####### SMT ####### 
     
     phenos <- locater.res$phenotype[locater.res$locus.idx==unique(locater.res$locus.idx)[1]]
+    # query phenotype information
     
     all.smt <- vector(mode = "list",length = length(phenos))
+    # create a list to store SMT results
     
     for (i in 1:length(res$smt.res)){
       smt.p <- res$smt.res[[i]]$smt.results[core.idx]
+      # extrat SMT results for variant in the core region
+      
       smt.regional <- data.frame(smt.pos,map,MAC,smt.p)
+      # combine p-value with map, minor allele count (SMT) and position
+      
       smt.regional$phenotype <- rep(phenos[i],nrow(smt.regional))
+      # add in the phenotype information
+      
       all.smt[[i]] <- smt.regional
     }
     
