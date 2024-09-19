@@ -6,7 +6,7 @@ The steps from genotype data to association signal could be summarized in the fo
 
 ![xinxin_Aug_23_2024 001](https://github.com/user-attachments/assets/13c23064-4cc6-4f6e-bc20-5f449f9de1a8)
 
-For reference, the publication for LOCATER procedure is: [cite LOCATER]
+For reference, the publication for LOCATER procedure is: [cite LOCATER]. Please cite this paper if you use LOCATER in your study.
 
 The GitHub repository for the code of LOCATER's original paper is [refer to Ryan's LOCATEr paper github]
 
@@ -14,7 +14,11 @@ The original Github repository for LOCATER software is: [here](https://github.co
 
 ## Dependencies
 
-The procedure is based on `kalis` and `locater`, R packages developed by our group. For installation and vignettes of `kalis`, see [here](https://kalis.louisaslett.com/index.html).
+The procedure is based on `kalis` and `locater`, R packages developed by our group. 
+
+For installation and vignettes of `kalis`, see [here](https://kalis.louisaslett.com/index.html). 
+
+For installation of LOCATER, see [here](https://github.com/ryanchrist/locater) [make sure this has installation instructions]
 
 Other dependencies include `dplyr`, `RSpectra`, `parallel`, `glmnet`, `tidyr`, `data.table`, and `Matrix`.
 
@@ -47,7 +51,7 @@ Output files are `.rds` files containing results. The R object inside this file 
 
 Collect tuning data corresponds to scripts `/tuning/tuning_data_collect.R`
 
-Input files of this step are: .rds` files containing results.
+Input files of this step are: `.rds` files containing results.
 
 Output file is a  `.txt` file with normalized SD, QForm and combined signal. Other diagnostic columns contain derived allele count for the causal variant (DAC column), and the signal of SMT at target and causal variant (smt.target and smt.causal columns)
 
