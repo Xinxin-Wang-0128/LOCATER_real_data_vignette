@@ -94,7 +94,7 @@ Output files are `.rds` files containing rank matched phenotypes. The R object i
 
 Run tuning corresponds to scripts inside `rank_matching_selection/2-pval-rank-matched/` folder, See README inside  `rank_matching_selection` folder for more information.
 
-Input files of this step are: .rds` files containing rank matched phenotypes, hap.gz files, table containing the boundaries of small segments, background covariate matrix, best HMM parameter setting.
+Input files of this step are: `.rds` files containing rank matched phenotypes, hap.gz files, table containing the boundaries of small segments, background covariate matrix, best HMM parameter setting.
 
 Output files are `.rds` files containing p-value from LOCATER and its sub-tests, and the basic information about this segment. We will parse these files in the next step.
 
