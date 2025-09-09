@@ -323,7 +323,7 @@ Output files are PDF files containing plots:
 
 Users could choose their preferred way to do conditional analysis (condition on the lead marker of SMT iteratively) and use preferred way to visualize. In this publication, we used in-house scripts to plot LocusZoom plots.
 
-#### Step 5.5: Residual analysis [may not want to add this]
+#### Step 5.5: Residual analysis
 
 This is only useful when SD is the sub-test that boosted the LOCATER signal.
 
