@@ -332,4 +332,6 @@ Residual analysis corresponds to scripts `/followup/residual-anlaysis`.
 Input files of this step are: apart from the input files in step 5.1, we would also need the position of interested variant.This analysis should be highly customizable based on specific interested regions, so the code is intentially left relative unmodularized.
 
 Output plots will look like:
+<img width="1094" height="513" alt="Screenshot 2025-09-09 at 8 20 20 PM" src="https://github.com/user-attachments/assets/fe75920a-de57-41d4-a5fb-029de1a7be3a" />
+<img width="700" height="617" alt="Screenshot 2025-09-09 at 8 20 35 PM" src="https://github.com/user-attachments/assets/69a3b1f1-8d07-414a-be1a-3476dbd36ca2" />
 
