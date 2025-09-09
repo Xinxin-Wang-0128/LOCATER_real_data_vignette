@@ -327,8 +327,9 @@ Users could choose their preferred way to do conditional analysis (condition on 
 
 This is only useful when SD is the sub-test that boosted the LOCATER signal.
 
-Residual analysis corresponds to scripts `/followup/???`. [add this]
+Residual analysis corresponds to scripts `/followup/residual-anlaysis`. 
 
-Input files of this step are: apart from the input files in step 5.1, we would also need the position of interested variant.[really??]
+Input files of this step are: apart from the input files in step 5.1, we would also need the position of interested variant.This analysis should be highly customizable based on specific interested regions, so the code is intentially left relative unmodularized.
 
-Output files are various `.rds` files containing .... [add detail of this file format] 
+Output plots will look like:
+
