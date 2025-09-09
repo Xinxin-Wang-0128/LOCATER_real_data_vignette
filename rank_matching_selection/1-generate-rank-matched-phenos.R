@@ -107,6 +107,7 @@ n <- length(samples.in.experiment)
 #  for (j in idx){
 #   rank.matched.y[, j] <- qnorm(sort(c(0.5, runif(n - 2) * (n - 1) + 0.5, n - 0.5) / n)[ranked])
 # generate rank matched phenotype with small truncation on both ends of the Gaussian distribution
+
 #  }
 
 #}

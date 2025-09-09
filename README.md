@@ -6,15 +6,15 @@ The steps from genotype data to association signal could be summarized in the fo
 
 ![xinxin_Aug_23_2024 001](https://github.com/user-attachments/assets/13c23064-4cc6-4f6e-bc20-5f449f9de1a8)
 
-For reference, the publication for LOCATER procedure is: [cite LOCATER]
-
-The GitHub repository for the code of LOCATER's original paper is [refer to Ryan's LOCATEr paper github]
-
-The original Github repository for LOCATER software is: [here](https://github.com/ryanchrist/locater)
+For reference, the publication for the LOCATER procedure is [Clade Distillation for Genome-wide Association Studies](https://www.biorxiv.org/content/10.1101/2024.09.30.615852v1). Please cite this paper if you use LOCATER in your study. (A simple vignette for LOCATER and the original GitHub repository for LOCATER software will be made public upon publication.)
 
 ## Dependencies
 
-The procedure is based on `kalis` and `locater`, R packages developed by our group. For installation and vignettes of `kalis`, see [here](https://kalis.louisaslett.com/index.html).
+The procedure is based on `kalis` and `locater`, R packages developed by our group. 
+
+For installation and vignettes of `kalis`, see [here](https://kalis.louisaslett.com/index.html). 
+
+The installation instructions will be made public upon publication of [Clade Distillation for Genome-wide Association Studies](https://www.biorxiv.org/content/10.1101/2024.09.30.615852v1).
 
 Other dependencies include `dplyr`, `RSpectra`, `parallel`, `glmnet`, `tidyr`, `data.table`, and `Matrix`.
 
@@ -47,7 +47,7 @@ Output files are `.rds` files containing results. The R object inside this file 
 
 Collect tuning data corresponds to scripts `/tuning/tuning_data_collect.R`
 
-Input files of this step are: .rds` files containing results.
+Input files of this step are: `.rds` files containing results.
 
 Output file is a  `.txt` file with normalized SD, QForm and combined signal. Other diagnostic columns contain derived allele count for the causal variant (DAC column), and the signal of SMT at target and causal variant (smt.target and smt.causal columns)
 
@@ -90,7 +90,7 @@ Output files are `.rds` files containing rank matched phenotypes. The R object i
 
 Run tuning corresponds to scripts inside `rank_matching_selection/2-pval-rank-matched/` folder, See README inside  `rank_matching_selection` folder for more information.
 
-Input files of this step are: .rds` files containing rank matched phenotypes, hap.gz files, table containing the boundaries of small segments, background covariate matrix, best HMM parameter setting.
+Input files of this step are: `.rds` files containing rank matched phenotypes, hap.gz files, table containing the boundaries of small segments, background covariate matrix, best HMM parameter setting.
 
 Output files are `.rds` files containing p-value from LOCATER and its sub-tests, and the basic information about this segment. We will parse these files in the next step.
 
