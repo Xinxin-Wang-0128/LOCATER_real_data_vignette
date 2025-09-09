@@ -3,6 +3,46 @@
 ###############################
 rm(list=ls())
 set.seed(28)
+
+# core function to generate rank matched phenotypes
+# y_orig: Original phenotype matrix
+# n_copies: Number of copies to generate
+# pheno_names: Vector of phenotype names
+# sample_ids: Vector of sample IDs
+#return generated rank-matched phenotype matrix
+generate_rank_matched_phenotypes <- function(y.orig, n.copies, interested.phenos, sample.ids) {
+  # Initialize result matrix
+  rank.matched.y <- matrix(0, 
+                           nrow = nrow(y.orig), 
+                           ncol = length(interested.phenos) * n.copies)
+  
+  # Set names
+  colnames(rank.matched.y) <- paste0(rep(interested.phenos, each = n.copies), 1:n.copies)
+  rownames(rank.matched.y) <- sample.ids
+  
+  # Generate values for each phenotype and copy
+  for (i in 1:length(interested.phenos)) {
+    # Calculate column indices for current phenotype
+    idx <- (n.copies * (i - 1) + 1):(n.copies * i)
+    
+    # Calculate ranks for original phenotype
+    ranked <- rank(y.orig[, i], na.last = "keep")
+    
+    # Generate each copy
+    for (j in idx) {
+      # Original rank-matching formula preserved
+      rank.matched.y[, j] <- qnorm(
+        sort(c(0.5, runif(n - 2) * (n - 1) + 0.5, n - 0.5) / n)[ranked]
+      )
+    }
+  }
+  
+  return(rank.matched.y)
+}
+
+
+
+# load the data
 run_group <- "WashU_CCDG"
 grand.data.dir <- "/gpfs/gibbs/pi/ycgh/xw445/projects/"
 
@@ -52,24 +92,31 @@ n.copies <- 100
 # this is the number of rank matching versions that you want to generate
 n <- length(samples.in.experiment)
 
-rank.matched.y <-  matrix(0, nrow = nrow(y.orig), ncol = length(interested.phenos)*n.copies)  
+#rank.matched.y <-  matrix(0, nrow = nrow(y.orig), ncol = length(interested.phenos)*n.copies)  
 # Initialize matrix 
 
-colnames(rank.matched.y) <- paste0(rep(interested.phenos, each = n.copies), 1:n.copies)
-rownames(rank.matched.y) <- samples.in.experiment
+#colnames(rank.matched.y) <- paste0(rep(interested.phenos, each = n.copies), 1:n.copies)
+#rownames(rank.matched.y) <- samples.in.experiment
 # specify column and row names
 
 # Generate values for each column
-for (i in 1:length(interested.phenos)) {
-  idx <- (n.copies * (i-1)+1):(n.copies*i)
-  # specify the columns that this phenotype will fill in
-  ranked <- rank(y.orig[,i],na.last="keep")
-  for (j in idx){
-    rank.matched.y[, j] <- qnorm(sort(c(0.5, runif(n - 2) * (n - 1) + 0.5, n - 0.5) / n)[ranked])
-    # generate rank matched phenotype with small truncation on both ends of the Gaussian distribution
-  }
+#for (i in 1:length(interested.phenos)) {
+#  idx <- (n.copies * (i-1)+1):(n.copies*i)
+# specify the columns that this phenotype will fill in
+#  ranked <- rank(y.orig[,i],na.last="keep")
+#  for (j in idx){
+#   rank.matched.y[, j] <- qnorm(sort(c(0.5, runif(n - 2) * (n - 1) + 0.5, n - 0.5) / n)[ranked])
+# generate rank matched phenotype with small truncation on both ends of the Gaussian distribution
+#  }
 
-}
+#}
+# Generate the rank-matched phenotypes using core function
+rank.matched.y <- generate_rank_matched_phenotypes(
+  y.orig = y.orig,
+  n.copies = n.copies,
+  interested.phenos = interested.phenos,
+  sample.ids = samples.in.experiment
+)
 
 rank.matched.y.rds <- paste0(grand.data.dir,run_group,"/screening/data/whole_genome_yale/rank_matched_y_seed28_100cp.rds")
 saveRDS(rank.matched.y,file = rank.matched.y.rds)
