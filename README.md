@@ -6,7 +6,7 @@ The steps from genotype data to association signal could be summarized in the fo
 
 ![xinxin_Aug_23_2024 001](https://github.com/user-attachments/assets/13c23064-4cc6-4f6e-bc20-5f449f9de1a8)
 
-For reference, the publication for the LOCATER procedure is [Clade Distillation for Genome-wide Association Studies](https://www.biorxiv.org/content/10.1101/2024.09.30.615852v1). Please cite this paper if you use LOCATER in your study. (A simple vignette for LOCATER and the original GitHub repository for LOCATER software will be made public upon publication.)
+For reference, LOCATER is published in Genetics: [Clade Distillation for Genome-wide Association Studies](https://doi.org/10.1093/genetics/iyaf158). Please cite this paper if you use LOCATER in your study. More information about LOCATER is [here](https://ryanchrist.github.io/locater/).
 
 ## Dependencies
 
@@ -14,7 +14,7 @@ The procedure is based on `kalis` and `locater`, R packages developed by our gro
 
 For installation and vignettes of `kalis`, see [here](https://kalis.louisaslett.com/index.html). 
 
-The installation instructions will be made public upon publication of [Clade Distillation for Genome-wide Association Studies](https://www.biorxiv.org/content/10.1101/2024.09.30.615852v1).
+The installation and vignettes of `locater`, see [here](https://ryanchrist.github.io/locater/).
 
 Other dependencies include `dplyr`, `RSpectra`, `parallel`, `glmnet`, `tidyr`, `data.table`, and `Matrix`.
 
